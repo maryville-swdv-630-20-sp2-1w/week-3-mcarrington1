@@ -12,11 +12,9 @@ class MenuItem:
         self.specialInstructions = specialInstructions
         
     def applyCoupon(self, discount):
-        print('Applying Discount of {}'.format(discount))
         self.cost -= discount
         
     def addExtras(self, extraCost):
-        print('Applying Extra cost of {}'.format(extraCost))
         self.cost += extraCost
         
 class Drink(MenuItem):
@@ -31,21 +29,22 @@ class Drink(MenuItem):
         self.extraFlavor = extraFlavor
         super(Drink, self).__init__(*args, **kwargs)
         
+    def __str__(self):
+        return ('Drink Order is: \n *Brand: {} \n *Flavor: {} \n *Size: {} \n *Special Instructions: {} \n *Cost: {}'
+              .format(self.brandName, self.extraFlavor, self.size, self.specialInstructions, self.cost))
+    
+    def __repr__(self):
+        return ('Size:{},Cost:{},SpecialInstructions:{},brandName:{},extraFlavor:{}'
+            .format(self.size, self.cost, self.specialInstructions, self.brandName, self.extraFlavor))        
+        
     def changeBrandName(self, newBrandName):
-        print('Changing Brand name from {} to {}'.format(self.brandName, newBrandName))
         self.brandName = newBrandName
     
     def addExtraFlavor(self, newFlavorName):
-        print('Adding flavor {} to {}'.format(newFlavorName, self.brandName))
         self.extraFlavor = newFlavorName
        
     def removeExtraFlavor(self):
-        print('Removing flavor {} from {}'.format(self.extraFlavor, self.brandName))
         self.extraFlavor = None
-        
-    def printFullDrinkOrder(self):
-        print('Drink Order is: \n *Brand: {} \n *Flavor: {} \n *Size: {} \n *Special Instructions: {} \n *Cost: {}'
-              .format(self.brandName, self.extraFlavor, self.size, self.specialInstructions, self.cost))
         
 class Pizza(MenuItem):
     """
@@ -69,7 +68,6 @@ class Pizza(MenuItem):
         self.__selectPizzaSideByName(toppingSide)[toppingIngredient] = toppingAmount
             
     def removeTopping(self, toppingSide, toppingIngredient):
-        # remove toppings from a the respective side
         try:
             del self.__selectPizzaSideByName(toppingSide)[toppingIngredient]
         except KeyError:
@@ -87,24 +85,19 @@ class Pizza(MenuItem):
         else:
             print('no valid side provided (left/right/all)! Defaulting to all.')
             return self.toppingsAll
-                
-    def printPizzaFullOrder(self):
-        print('Pizza Order Is: \n *Size: {} \n *Cheese Amount: {} \n *Crust Type: {} \n *Cost: {} \n *Special Instructions: {}'
-              .format(self.size, self.cheeseAmount, self.crustType, self.cost, self.specialInstructions))
-        
-        print(' *Left Toppings:', end = '')
-        for key, value in self.toppingsLeft.items():
-            print(' {} ({})'.format(key, value), end = '')
-        print() 
-
-        print(' *Right Toppings:', end = '')
-        for key, value in self.toppingsRight.items():
-            print(' {} ({})'.format(key, value), end = '')
-        print() 
             
-        print(' *Left+Right Toppings:', end = '')            
-        for key, value in self.toppingsAll.items():
-            print(' {} ({})'.format(key, value), end = '')
+    def __str__(self):
+        toppingLeftContents = ",".join((" {} ({})".format(*i) for i in self.toppingsLeft.items()))
+        toppingRightContents = ",".join((" {} ({})".format(*i) for i in self.toppingsRight.items()))
+        toppingsAllContents = ",".join((" {} ({})".format(*i) for i in self.toppingsAll.items()))
+        
+        return('Pizza Order Is: \n *Size: {} \n *Cheese Amount: {} \n *Crust Type: {} \n *Cost: {} \n *Special Instructions: {} \n *Left Toppings: {} \n *Right Toppings: {} \n *Left+Right Toppings: {}'
+              .format(self.size, self.cheeseAmount, self.crustType, self.cost, self.specialInstructions, toppingLeftContents, toppingRightContents, toppingsAllContents))
+    
+    def __repr__(self):
+        return ('Size:{},Cost:{},SpecialInstructions:{},cheeseAmount:{},toppingsLeft:{},toppingsRight:{},toppingsAll:{},crustType:{}'
+            .format(self.size, self.cost, self.specialInstructions, self.cheeseAmount,
+                    self.toppingsLeft, self.toppingsRight, self.toppingsAll, self.crustType))        
                
 class Appetizer(MenuItem):
     """
@@ -118,17 +111,19 @@ class Appetizer(MenuItem):
         self.sauceType = sauceType
         super(Appetizer, self).__init__(*args, **kwargs)
         
+    def __str__(self):
+        return ('Appetizer Order is: \n *Type: {} \n *Sauce: {} \n *Size: {} \n *Special Instructions: {} \n *Cost: {}'
+            .format(self.appetizerType, self.sauceType, self.size, self.specialInstructions, self.cost))
+    
+    def __repr__(self):
+        return ('Size:{},Cost:{},SpecialInstructions:{},AppetizerType:{},SauceType:{}'
+            .format(self.size, self.cost, self.specialInstructions, self.appetizerType, self.sauceType))
+        
     def changeAppetizerType(self, newAppetizerType):
-        print('Changing Appetizer Type from {} to {}'.format(self.appetizerType, newAppetizerType))
         self.appetizerType = newAppetizerType
     
     def changeAppetizerSauce(self, newSauceType):
-        print('Changing Sauce for {} from {} to {}'.format(self.appetizerType, self.sauceType, newSauceType))
         self.sauceType = newSauceType
-        
-    def printAppetizerOrder(self):
-        print('Appetizer Order is: \n *Type: {} \n *Sauce: {} \n *Size: {} \n *Special Instructions: {} \n *Cost: {}'
-              .format(self.appetizerType, self.sauceType, self.size, self.specialInstructions, self.cost))
         
 def main():
     print('## Drink Test(s) ##')
@@ -136,7 +131,7 @@ def main():
     itemDrink.addExtraFlavor('chocolate')
     itemDrink.removeExtraFlavor()
     itemDrink.changeBrandName('Diet Pepsi')
-    itemDrink.printFullDrinkOrder()
+    print(itemDrink)
     
     print('## Pizza Test(s) ##')
     toppingsLeft = {'pepperoni': 'extra'}
@@ -145,11 +140,11 @@ def main():
     itemPizza = Pizza('regular', toppingsLeft, toppingsRight, toppingsAll, 'deep dish', 'Large', 9.99, 'Well Done')
     itemPizza.addTopping('left', 'pineapple', 'light')
     itemPizza.removeTopping('all', 'roma tomatoes')
-    itemPizza.printPizzaFullOrder()
+    print(itemPizza)
     
-    print('\n## Appetizer Test(s) ##')
+    print('## Appetizer Test(s) ##')
     itemAppetizer = Appetizer('mozzarella sticks', None, 'small', 1.99, None)
     itemAppetizer.changeAppetizerSauce('marinara sauce')
-    itemAppetizer.printAppetizerOrder()
+    print(itemAppetizer)
 
 main()
